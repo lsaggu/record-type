@@ -22,5 +22,54 @@ In order to make use of this module, the following must be true:
     - See this article to [setup the Speech Service](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started) within your Microsoft Azure Subscription.
 
 ### Installation
+1. Clone this repository into a local directory.
+2. Move/Add the newly created, local *record-type* directory into the *Modules* directory of your **node.js** project:
+
+    `
+        root
+        |
+        |-- bin/
+        |-- modules/        # Move to this folder
+        |-- node_modules/   # Or move here
+        |-- public/
+        |-- routes/
+        |-- views/
+        |-- app.js
+        |-- package.json
+        |-- package-lock.json
+        |-- README.md
+
+    `
+    - For example, the result will look like this:
+        `
+            root
+            |
+            |-- modules/
+                |
+                |-- record-type/
+                    |
+                    |-- record.js
+                    |-- package.json
+                    |-- README.md
+                    |-- LICENSE
+        `
+
+3. Update the package variables
+    - Update environment variables within the *record.js* file to reference your own **Subscription Key**, **Service Region**, and desired **File Location**.
+    
+    `//UPDATE THESE VARIABLES TO REFERENCE YOUR OWN KEY/REGION/FILEPATH
+    const subscriptionKey = process.env.AZURE_TTS_SUBSCRIPTION_KEY; //this is the microsoft cloud text-to-speech subscription key
+    const serviceRegion = process.env.AZURE_SERVICE_REGION; //this is the service region of your microsoft azure subscription
+    const fileLocatoin = process.env.FILE_PATH //this is the local directory where you want to store your newly created audio files` 
+
+    - Save the file.
+
+4. From your node.js project root directory, install the *record-type* module:
+    `npm install ./<route-to-module>/record-type`
+
+5. You should be able to reference the module in your own classes/modules:
+    `const record-type = require('record-type');`
 
 ## Resources
+
+- [Basics of Speech Synthesis with Microsoft Speech Service SDK](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/text-to-speech-basics?tabs=import&pivots=programming-language-javascript#synthesize-to-speaker-output)
