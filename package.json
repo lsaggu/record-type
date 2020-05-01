@@ -1,0 +1,29 @@
+{
+  "name": "record-type",
+  "version": "1.0.0",
+  "description": "A Node.js module for converting text to speech leveraging the microsoft-cognitiveservices-speech-sdk",
+  "main": "record.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lsaggu/record-type.git"
+  },
+  "dependencies": {
+    "https-proxy-agent": "^5.0.0",
+    "microsoft-cognitiveservices-speech-sdk": "^1.11.0",
+    "tmp": "^0.2.1"
+  },
+  "keywords": [
+    "node",
+    "text-to-speech",
+    "cloud"
+  ],
+  "author": "Lorander Saggu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lsaggu/record-type/issues"
+  },
+  "homepage": "https://github.com/lsaggu/record-type#readme"
+}
