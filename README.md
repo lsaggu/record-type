@@ -35,6 +35,7 @@ In order to make use of this module, the following must be true:
         |   |-- record-type/
         |       |
         |       |-- record.js
+        |       |-- sample.xml
         |       |-- package.json
         |       |-- README.md
         |       |-- LICENSE
@@ -49,8 +50,10 @@ In order to make use of this module, the following must be true:
         |-- README.md
     ```
 
-3. Update the package variables
-    - Update environment variables within the *record.js* file to reference your own **Subscription Key**, **Service Region**, and desired **File Location**.
+3. Copy the *sample.xml* file from this repo into your desired project folder. I recommend within the `/public/` directory.
+
+4. Update the package variables
+    - Update environment variables within the *record.js* file to reference your own **Subscription Key**, **Service Region**, **Sample XML File Path**, and desired **File Location**.
     
     ```javascript
     //UPDATE THESE VARIABLES TO REFERENCE YOUR OWN KEY/REGION/FILEPATH
@@ -59,14 +62,14 @@ In order to make use of this module, the following must be true:
     const fileLocatoin = process.env.FILE_PATH //this is the local directory where you want to store your newly created audio files
     ```    
 
-4. Save the *record.js* file.
+5. Save the *record.js* file.
 
-5. From your node.js project root directory, install the *record-type* module:
+6. From your node.js project root directory, install the *record-type* module:
     ```
     npm install ./<route-to-module>/record-type
     ```
 
-6. You should be able to reference the module in your own classes/modules: 
+7. You should be able to reference the module in your own classes/modules: 
     ```
     const record-type = require('record-type');
     ```

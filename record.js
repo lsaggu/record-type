@@ -6,15 +6,28 @@
 //required modules
 const sdk = require("microsoft-cognitiveservices-speech-sdk"); //using speech resource on microsoft azure cloud
 const tmp = require("tmp"); //temporary directory manager
-const rp = require('request-promise'); //NOTE: 'request-promise' works in coordination with 'request', which is deprecated
+const rp = require("request-promise"); //NOTE: 'request-promise' works in coordination with 'request', which is deprecated
 const fs = require("fs");
 
 //vars
 //UPDATE THESE VARIABLES TO REFERENCE YOUR OWN KEY/REGION/FILEPATH
 const subscriptionKey = process.env.AZURE_TTS_SUBSCRIPTION_KEY; //this is the microsoft cloud text-to-speech subscription key
 const serviceRegion = process.env.AZURE_SERVICE_REGION; //this is the service region of your microsoft azure subscription
-const fileLocation = process.env.FILE_PATH //this is the local directory where you want to store your newly created audio files
+const fileLocation = process.env.FILE_PATH; //this is the local directory where you want to store your newly created audio files
+const sampleXmlFileLocation = process.env.SAMPLE_XML_FILE_PATH; //this is the file path (relative to your project root folder) of the sample XML file (ex: './public/audio/sample.xml')
+                                                                //use the sample.xml file within the record-type repo
 
+//create an XML SSML string
+function createSsmlXMLString(text, voice) {
+    console.log('creating ssml xml string');
+
+    var xml = fs.readFileSync(sampleXmlFileLocation, 'utf8');
+    xml = xml.replace('_name', voice);
+    xml = xml.replace('_text', text);
+    //console.log(xml);
+
+    return xml;
+}
 
 //get a list of available voices to use with the microsoft speech service
 //this method makes two consecutive REST API calls to the microsoft cognitive speech service
@@ -88,6 +101,47 @@ function synthesizeSpeechToFile(text) {
 
 }
 
+function synthesizeSsmlSpeechToFile(text, voice) {
+    //create temporary file
+    const tmpFile = tmp.fileSync({ tmpdir: fileLocation, postfix: '.wav' }); //this is the file name/location where the synthesized audio file will be saved
+    //microsoft uses .wav files as output - .wav is higher quality than .mp3 and better for editing/production
+
+    const filePath = tmpFile.name; //this is the file path (ex: 'path/to/myFile.wav')
+
+    //NOTE: you may wish to use 'fs' here to create/manage your destination .wav file
+    //      you can do so in conjunction with or in place of 'tmp'
+
+    // create the audio-config pointing to our stream and
+    // the speech config specifying the language.
+    var audioConfig = sdk.AudioConfig.fromAudioFileOutput(filePath); //setting tmp filename
+    var speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
+
+    //create XML string
+    var ssml = createSsmlXMLString(text, voice);
+    
+    var synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
+
+    //create the speech synthesizer
+    return new Promise((resolve, reject) => {
+        synthesizer.speakSsmlAsync(ssml, result => {
+            if (result) {
+                if (result.errorDetails) {
+                    console.log('Error:');
+                    console.log(result.errorDetails);
+                } else {
+                    console.log(JSON.stringify(result));
+                }
+            }
+            synthesizer.close();
+            resolve(filePath); //return path of file
+        }, error => {
+            synthesizer.close();
+            reject(error); //throw error
+        });
+    });
+
+}
+
 // synthesizeSpeechToAudioStream accepts a string of text and generates an output ArrayBuffer object
 function synthesizeSpeechToAudioStream(text) {
     var speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
@@ -118,6 +172,42 @@ function synthesizeSpeechToAudioStream(text) {
     });
 }
 
+function synthesizeSsmlSpeechToAudioStream(text, voice) {
+    var speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
+    //var audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput(); //fromDefaultSpeakerOutput is still in development by microsoft!
+
+    //create XML string
+    var ssml = createSsmlXMLString(text, voice);
+
+    const synthesizer = new sdk.SpeechSynthesizer(speechConfig);
+
+    return new Promise((resolve, reject) => {
+        synthesizer.speakSsmlAsync(ssml, result => {
+            var audioData;
+
+            if (result) {
+                if (result.errorDetails) {
+                    console.log('Error:');
+                    console.log(result.errorDetails);
+                } else {
+                    //capture audio ArrayBuffer data
+                    audioData = result.audioData;
+                    console.log(`Audio data byte size: ${audioData.byteLength}`);
+
+                    //console.log(JSON.stringify(result));
+                }
+
+            }
+            synthesizer.close();
+
+            resolve(audioData); // return audioData ArrayBuffer
+        }, error => {
+            synthesizer.close();
+            reject(error); // throw error
+        });
+    });
+}
+
 
 //exported functions for use in other modules/classes
 module.exports = {
@@ -125,6 +215,14 @@ module.exports = {
     getVoices: function (filePath) { //file path is a String indicating where the .json voices file should be saved in relation to your project root
         console.log('running get voices');
         getVoicesFromCloud(filePath);
+    },
+
+    recordSsml: async function (text, voice) {
+        console.log('Recording SSML!');
+
+        let tmpFile = await synthesizeSsmlSpeechToFile(text, voice);
+
+        return tmpFile;
     },
 
     record: async function (text) {
@@ -140,6 +238,14 @@ module.exports = {
 
         let audioData = await synthesizeSpeechToAudioStream(text);
         
+        return audioData;
+    },
+
+    playSsml: async function (text, voice) {
+        console.log('Playing SSML!');
+
+        let audioData = await synthesizeSsmlSpeechToAudioStream(text, voice);
+
         return audioData;
     }
 
