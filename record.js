@@ -6,13 +6,50 @@
 //required modules
 const sdk = require("microsoft-cognitiveservices-speech-sdk"); //using speech resource on microsoft azure cloud
 const tmp = require("tmp"); //temporary directory manager
+const rp = require('request-promise'); //NOTE: 'request-promise' works in coordination with 'request', which is deprecated
 const fs = require("fs");
 
 //vars
 //UPDATE THESE VARIABLES TO REFERENCE YOUR OWN KEY/REGION/FILEPATH
 const subscriptionKey = process.env.AZURE_TTS_SUBSCRIPTION_KEY; //this is the microsoft cloud text-to-speech subscription key
 const serviceRegion = process.env.AZURE_SERVICE_REGION; //this is the service region of your microsoft azure subscription
-const fileLocatoin = process.env.FILE_PATH //this is the local directory where you want to store your newly created audio files
+const fileLocation = process.env.FILE_PATH //this is the local directory where you want to store your newly created audio files
+
+
+//get a list of available voices to use with the microsoft speech service
+//this method makes two consecutive REST API calls to the microsoft cognitive speech service
+async function getVoicesFromCloud(filePath) {
+    //get access token
+    const token_endpoint = 'https://' + serviceRegion + '.api.cognitive.microsoft.com/sts/v1.0/issueToken';
+    let tokenOptions = {
+        method: 'POST',
+        uri: token_endpoint,
+        headers: {
+            'Ocp-Apim-Subscription-Key': subscriptionKey
+        }
+    };
+
+    var token = await rp(tokenOptions);
+
+    let voicesOptions = {
+        method: 'GET',
+        baseUrl: 'https://' + serviceRegion + '.tts.speech.microsoft.com/',
+        url: 'cognitiveservices/voices/list',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    }
+
+    var request = await rp(voicesOptions).on('response', (response) => {
+        if (response.statusCode === 200) {
+            response.pipe(fs.createWriteStream(filePath));
+            console.log('File is ready');
+        }
+    });
+
+    //console.log(request); // this will print the contents of the file to the console.
+}
 
 // synthesizeSpeechToFile accepts a string of text and generates an output .wav file
 function synthesizeSpeechToFile(text) {
@@ -84,6 +121,11 @@ function synthesizeSpeechToAudioStream(text) {
 
 //exported functions for use in other modules/classes
 module.exports = {
+
+    getVoices: function (filePath) { //file path is a String indicating where the .json voices file should be saved in relation to your project root
+        console.log('running get voices');
+        getVoicesFromCloud(filePath);
+    },
 
     record: async function (text) {
         console.log('Recording!');

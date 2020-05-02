@@ -73,3 +73,5 @@ In order to make use of this module, the following must be true:
 ## Resources
 
 - [Basics of Speech Synthesis with Microsoft Speech Service SDK](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/text-to-speech-basics?tabs=import&pivots=programming-language-javascript#synthesize-to-speaker-output)
+- [Request npm package is deprecated](https://www.npmjs.com/package/request)
+- [Request-Promise npm package](https://www.npmjs.com/package/request-promise)
