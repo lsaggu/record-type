@@ -101,6 +101,8 @@ function synthesizeSpeechToFile(text) {
 
 }
 
+//synthesizeSsmlSpeechToFile accepts a string of text and a voice parameter and generates a .wav file of the text
+//being spoken by the given voice
 function synthesizeSsmlSpeechToFile(text, voice) {
     //create temporary file
     const tmpFile = tmp.fileSync({ tmpdir: fileLocation, postfix: '.wav' }); //this is the file name/location where the synthesized audio file will be saved
@@ -172,6 +174,9 @@ function synthesizeSpeechToAudioStream(text) {
     });
 }
 
+//synthesizeSsmlSpeechToAudioStream accepts a string of text and a voice parameter and generates
+//an ArrayBuffer object of the text being spoken by the given voice. This ArrayBuffer may be manipulated
+//by the parent program.
 function synthesizeSsmlSpeechToAudioStream(text, voice) {
     var speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
     //var audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput(); //fromDefaultSpeakerOutput is still in development by microsoft!

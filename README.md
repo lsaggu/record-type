@@ -8,6 +8,13 @@ The *record-type* module only leverages the **speech-to-text** capabilities of t
 
 Developers are encouraged to explore the service and build/test/etc., as the Speech SDK is relatively new with many cool features still under development.
 
+### Contents
+
+- *record.js* - This is the main node.js module file.
+- *package.json* - This file defines the node.js module and is essential for initialization/installation of the package by npm.
+- *sample.xml* - This file is essential for use of the *playSsml* or *recordSsml* functions
+- *voices.json* - This is a json file of all of the voices currently available for use with the Microsoft Cognitive Services Speech SDK. This file is returned by running this module's *getVoices()* function.
+
 ## Usage
 This module currently offers two simple functions:
 1. `play(text)` - Create an in-memory ArrayBuffer object from a string of *text*.
@@ -63,7 +70,9 @@ In order to make use of this module, the following must be true:
     //UPDATE THESE VARIABLES TO REFERENCE YOUR OWN KEY/REGION/FILEPATH
     const subscriptionKey = process.env.AZURE_TTS_SUBSCRIPTION_KEY; //this is the microsoft cloud text-to-speech subscription key
     const serviceRegion = process.env.AZURE_SERVICE_REGION; //this is the service region of your microsoft azure subscription
-    const fileLocatoin = process.env.FILE_PATH //this is the local directory where you want to store your newly created audio files
+    const fileLocation = process.env.FILE_PATH //this is the local directory where you want to store your newly created audio files
+    const sampleXmlFileLocation = process.env.SAMPLE_XML_FILE_PATH; //this is the file path (relative to your project root folder) of the sample XML file (ex: './public/audio/sample.xml')
+                                                                //use the sample.xml file within the record-type repo
     ```    
 
 5. Save the *record.js* file.
