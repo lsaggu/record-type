@@ -18,12 +18,15 @@ const sampleXmlFileLocation = process.env.SAMPLE_XML_FILE_PATH; //this is the fi
                                                                 //use the sample.xml file within the record-type repo
 
 //create an XML SSML string
-function createSsmlXMLString(text, voice) {
+function createSsmlXMLString(text, voice, style) {
     console.log('creating ssml xml string');
 
     var xml = fs.readFileSync(sampleXmlFileLocation, 'utf8');
     xml = xml.replace('_name', voice);
     xml = xml.replace('_text', text);
+    if (style) {
+        xml = xml.replace('_style', style);
+    }
     //console.log(xml);
 
     return xml;
@@ -103,7 +106,7 @@ function synthesizeSpeechToFile(text) {
 
 //synthesizeSsmlSpeechToFile accepts a string of text and a voice parameter and generates a .wav file of the text
 //being spoken by the given voice
-function synthesizeSsmlSpeechToFile(text, voice) {
+function synthesizeSsmlSpeechToFile(text, voice, style) {
     //create temporary file
     const tmpFile = tmp.fileSync({ tmpdir: fileLocation, postfix: '.wav' }); //this is the file name/location where the synthesized audio file will be saved
     //microsoft uses .wav files as output - .wav is higher quality than .mp3 and better for editing/production
@@ -119,7 +122,7 @@ function synthesizeSsmlSpeechToFile(text, voice) {
     var speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
 
     //create XML string
-    var ssml = createSsmlXMLString(text, voice);
+    var ssml = createSsmlXMLString(text, voice, style);
     
     var synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
 
@@ -177,12 +180,12 @@ function synthesizeSpeechToAudioStream(text) {
 //synthesizeSsmlSpeechToAudioStream accepts a string of text and a voice parameter and generates
 //an ArrayBuffer object of the text being spoken by the given voice. This ArrayBuffer may be manipulated
 //by the parent program.
-function synthesizeSsmlSpeechToAudioStream(text, voice) {
+function synthesizeSsmlSpeechToAudioStream(text, voice, style) {
     var speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
     //var audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput(); //fromDefaultSpeakerOutput is still in development by microsoft!
 
     //create XML string
-    var ssml = createSsmlXMLString(text, voice);
+    var ssml = createSsmlXMLString(text, voice, style);
 
     const synthesizer = new sdk.SpeechSynthesizer(speechConfig);
 
@@ -222,10 +225,10 @@ module.exports = {
         getVoicesFromCloud(filePath);
     },
 
-    recordSsml: async function (text, voice) {
+    recordSsml: async function (text, voice, style) {
         console.log('Recording SSML!');
 
-        let tmpFile = await synthesizeSsmlSpeechToFile(text, voice);
+        let tmpFile = await synthesizeSsmlSpeechToFile(text, voice, style);
 
         return tmpFile;
     },
@@ -246,10 +249,10 @@ module.exports = {
         return audioData;
     },
 
-    playSsml: async function (text, voice) {
+    playSsml: async function (text, voice, style) {
         console.log('Playing SSML!');
 
-        let audioData = await synthesizeSsmlSpeechToAudioStream(text, voice);
+        let audioData = await synthesizeSsmlSpeechToAudioStream(text, voice, style);
 
         return audioData;
     }
