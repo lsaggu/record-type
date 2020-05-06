@@ -19,12 +19,14 @@ Developers are encouraged to explore the service and build/test/etc., as the Spe
 This module currently offers two simple functions:
 1. `play(text)` - Create an in-memory ArrayBuffer object from a string of *text*.
 2. `record(text)` - Create a .wav file from a string of *text*.
-3. `playSsml(text, voice[, style])` - Create an in-memory ArrayBuffer object from a string of *text* and in a specified *voice*.
+3. `playSsml(text, voice[, style, speed])` - Create an in-memory ArrayBuffer object from a string of *text* and in a specified *voice*.
     - *voice* is a string value equivalent to any of the **ShortName** attributes in the *voices.json* file in this repo (ex. 'ar-EG-Hoda').
     - *style* is an optional paramater - See [Adjust Speaking Style](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-synthesis-markup?tabs=javascript#adjust-speaking-styles) for notes on acceptable argument values.
+    - *speed* is an optional parameter - this is a number greater than 0 determining how fast the speech should be spoken. 0.9 or 1.0 represent normal human speech.
 4. `recordSsml(text, voice[, style])` - Create a .wav file from a string of *text* in a specified *voice*.
     - *voice* is a string value equivalent to any of the **ShortName** attributes in the *voices.json* file in this repo (ex. 'ar-EG-Hoda').
     - *style* is an optional paramater - See [Adjust Speaking Style](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-synthesis-markup?tabs=javascript#adjust-speaking-styles) for notes on acceptable argument values.
+    - *speed* is an optional parameter - this is a number greater than 0 determining how fast the speech should be spoken. 0.9 or 1.0 represent normal human speech.
 5. `getVoices(filePath)` - Creates a .json file in the specified file (relative to project root directory) of the voices accessible via the Microsoft Azure Cognitive Services Speech SDK
 
 ### Prerequisites
